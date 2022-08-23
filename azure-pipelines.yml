@@ -1,0 +1,40 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+jobs:
+  - job: Mobile
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+      - task: FlutterInstall@0
+        inputs:
+          mode: 'auto'
+          channel: 'stable'
+          version: 'custom'
+          customVersion: '2.10.5'
+
+      - task: file-creator@6
+        inputs:
+          filepath: '$(System.DefaultWorkingDirectory)/local.properties'
+          filecontent: 'sdk.dir=C:/Users/edyer.reyes/AppData/Local/Android/sdk'
+          fileoverwrite: true
+
+      - task: JavaToolInstaller@0
+        displayName: Install JDK
+        inputs:
+          versionSpec: '8'
+          jdkArchitectureOption: 'x64'
+          jdkSourceOption: 'PreInstalled'
+
+      - task: FlutterBuild@0
+        inputs:
+          target: 'apk'
+          projectDirectory: '.'
+          entryPoint: "lib/main.dart"
+          iosCodesign: false
+
